@@ -49,8 +49,8 @@ font_small = pygame.font.SysFont("Arial", 36)
 
 def center_surface(surface, x_offset = 0, y_offset = 0):
     return surface.get_rect(center = (
-        screen_width / 2 + x_offset, 
-        screen_height / 2 + y_offset))
+        screen_width // 2 + x_offset, 
+        screen_height // 2 + y_offset))
 
 def draw_large_text(text, color):
     text_surface = font_large.render(text, True, color)
