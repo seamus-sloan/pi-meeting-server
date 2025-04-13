@@ -1,4 +1,4 @@
-from flask import Flask, request, jsonify
+from flask import Flask, request, jsonify, after_this_request
 import subprocess
 
 app = Flask(__name__)
@@ -16,22 +16,27 @@ def update_code():
         venv_python = f"{repo_dir}/venv/bin/python"
         venv_pip = f"{repo_dir}/venv/bin/pip"
 
-        # Pull the new changes & update dependencies
+        # Pull updates and install requirements
         pull_output = subprocess.check_output(['git', '-C', repo_dir, 'pull'], stderr=subprocess.STDOUT)
         pip_output = subprocess.check_output([venv_pip, 'install', '-r', f'{repo_dir}/requirements.txt'], stderr=subprocess.STDOUT)
-        
-        # Restart scripts (kill old, run fresh)
-        subprocess.call(['pkill', '-f', 'server.py'])
-        subprocess.call(['pkill', '-f', 'display_status.py'])
 
-        subprocess.Popen([venv_python, f'{repo_dir}/server.py'])
-        subprocess.Popen([venv_python, f'{repo_dir}/display_status.py'])
-
-        return jsonify({
+        # Build response before killing anything
+        response = jsonify({
             "status": "Updated successfully",
             "git": pull_output.decode(),
             "pip": pip_output.decode()
         })
+
+        # Send response first
+        @after_this_request
+        def restart_scripts(response_obj):
+            subprocess.call(['pkill', '-f', 'server.py'])
+            subprocess.call(['pkill', '-f', 'display_status.py'])
+            subprocess.Popen([venv_python, f'{repo_dir}/server.py'])
+            subprocess.Popen([venv_python, f'{repo_dir}/display_status.py'])
+            return response_obj
+
+        return response
 
     except subprocess.CalledProcessError as e:
         return jsonify({
