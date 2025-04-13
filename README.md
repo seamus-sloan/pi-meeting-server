@@ -22,5 +22,5 @@ source venv/bin/activate
 pip install -r requirements.txt
 
 # Run the programs
-python server.py && python display_status.py 
+python server.py & python display_status.py 
 ```
