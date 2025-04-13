@@ -16,6 +16,8 @@ def get_status():
 @app.route('/status', methods=['POST'])
 def update_status():
     data = request.get_json()
+    if not data:
+        return jsonify({"error": "Invalid JSON"}), 400
 
     for key in current_status:
         if key in data:
