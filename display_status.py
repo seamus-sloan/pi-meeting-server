@@ -17,7 +17,7 @@ def show_red_screen():
     pygame.display.flip()
 
 def show_green_screen():
-    screen.fill(0, 255, 0)
+    screen.fill((0, 255, 0))
     pygame.display.flip()
 
 # Main Loop
