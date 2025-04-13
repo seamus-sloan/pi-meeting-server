@@ -1,6 +1,9 @@
+import os
 import pygame
 import requests
 import threading
+
+DEBUG = os.getenv("DEBUG", "false").lower() == "true"
 
 # Settings
 SERVER_URL = "http://localhost:5000/status"
@@ -18,33 +21,38 @@ BLUE = (0, 0, 255)
 BLACK = (0, 0, 0)
 WHITE = (255, 255, 255)
 
+# See fetch_status
+running = True
+
 # Setup the screen
 pygame.init()
-window_size = (800, 600)  # Width, Height
-screen = pygame.display.set_mode(window_size)
-# screen = pygame.display.set_mode((0,0), pygame.FULLSCREEN)
+if DEBUG:
+    window_size = (800, 600)  # Width, Height
+    screen = pygame.display.set_mode(window_size)
+else:
+    screen = pygame.display.set_mode((0,0), pygame.FULLSCREEN)
+
 pygame.display.set_caption("Status Display")
 clock = pygame.time.Clock()
 
-# Setup the font
-pygame.font.init()
+# Setup the fonts
 font_large = pygame.font.SysFont("Arial", 100)
 font_small = pygame.font.SysFont("Arial", 36)
 
 
-def get_center_rect(surface, x_offset = 0, y_offset = 0):
+def center_surface(surface, x_offset = 0, y_offset = 0):
     return surface.get_rect(center = (
         screen.get_width() / 2 + x_offset, 
         screen.get_height() / 2 + y_offset))
 
 def draw_large_text(text, color):
     text_surface = font_large.render(text, True, color)
-    text_rect = get_center_rect(text_surface)
+    text_rect = center_surface(text_surface)
     screen.blit(text_surface, text_rect)
 
 def draw_small_text(text, y_offset):
     text_surface = font_small.render(text, True, BLACK)
-    text_rect = get_center_rect(text_surface, 0, y_offset)
+    text_rect = center_surface(text_surface, 0, y_offset)
     screen.blit(text_surface, text_rect)
 
 def show_status(status):
@@ -68,13 +76,13 @@ def show_status(status):
 
 def fetch_status():
     global current_status
-    while True:
+    while running:
         try:
             response = requests.get(SERVER_URL)
             if response.status_code == 200:
                 current_status = response.json()
-        except requests.RequestException:
-            print("Failed to talk to Flask Server!")
+        except requests.RequestException as e:
+            print(f"Request failed: {e}")
 
         pygame.time.wait(POLL_INTERVAL * 1000) # Wait before next request...
 
@@ -101,4 +109,5 @@ try:
         clock.tick(30)  # 30 FPS for smoother graphics
 
 except KeyboardInterrupt:
+    running = False
     pygame.quit()
