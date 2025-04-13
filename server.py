@@ -13,17 +13,19 @@ current_status = {
 def update_code():
     try:
         repo_dir = "/home/sesloan/pi-meeting-server"
+        venv_python = f"{repo_dir}/venv/bin/python"
+        venv_pip = f"{repo_dir}/venv/bin/pip"
 
         # Pull the new changes & update dependencies
         pull_output = subprocess.check_output(['git', '-C', repo_dir, 'pull'], stderr=subprocess.STDOUT)
-        pip_output = subprocess.check_output(['pip', 'install', '-r', f'{repo_dir}/requirements.txt'], stderr=subprocess.STDOUT)
+        pip_output = subprocess.check_output([venv_pip, 'install', '-r', f'{repo_dir}/requirements.txt'], stderr=subprocess.STDOUT)
         
         # Restart scripts (kill old, run fresh)
         subprocess.call(['pkill', '-f', 'server.py'])
         subprocess.call(['pkill', '-f', 'display_status.py'])
 
-        subprocess.Popen(['python3', f'{repo_dir}/server.py'])
-        subprocess.Popen(['python3', f'{repo_dir}/display_status.py'])
+        subprocess.Popen([venv_python, f'{repo_dir}/server.py'])
+        subprocess.Popen([venv_python, f'{repo_dir}/display_status.py'])
 
         return jsonify({
             "status": "Updated successfully",
