@@ -5,14 +5,18 @@ import threading
 # Settings
 SERVER_URL = "http://localhost:5000/status"
 POLL_INTERVAL = 5 # seconds
-current_status = None
+current_status = {
+    "droneOn": False,
+    "inMeeting": False,
+    "videoOn": False
+}
 
 # Colors
 RED = (255, 0 , 0)
 GREEN = (0, 255, 0)
 BLUE = (0, 0, 255)
-BLACK = (255, 255, 255)
-WHITE = (0, 0, 0)
+BLACK = (0, 0, 0)
+WHITE = (255, 255, 255)
 
 # Setup the screen
 pygame.init()
@@ -27,32 +31,39 @@ pygame.font.init()
 font_large = pygame.font.SysFont("Arial", 100)
 font_small = pygame.font.SysFont("Arial", 36)
 
-def draw_text(text, color):
+
+def get_center_rect(surface, x_offset = 0, y_offset = 0):
+    return surface.get_rect(center = (
+        screen.get_width() / 2 + x_offset, 
+        screen.get_height() / 2 + y_offset))
+
+def draw_large_text(text, color):
     text_surface = font_large.render(text, True, color)
-    text_rect = text_surface.get_rect(center = (screen.get_width() / 2, screen.get_height() / 2))
+    text_rect = get_center_rect(text_surface)
     screen.blit(text_surface, text_rect)
 
-def show_header(status):
-    lines = [
-        f"{'VIDEO ON' if status.get('videoOn') else 'VIDEO OFF'}"
-        f"{'DRONE ON' if status.get('droneOn') else 'DRONE OFF'}"
-    ]
+def draw_small_text(text, y_offset):
+    text_surface = font_small.render(text, True, BLACK)
+    text_rect = get_center_rect(text_surface, 0, y_offset)
+    screen.blit(text_surface, text_rect)
 
-    for i, line in enumerate(lines):
-        text_surface = font_small.render(line, True, WHITE)
-        text_rect = text_surface.get_rect(center = (screen.get_width() / 2, 200 + i * 40))
-        screen.blit(text_surface, text_rect)
+def show_status(status):
+    in_meeting = status.get("inMeeting")
+    if in_meeting:
+        screen.fill(RED)
+        draw_large_text("IN MEETING", WHITE)
+    else:
+        screen.fill(GREEN)
+        draw_large_text("FREE", BLACK)
+    
+    video_status = status.get('videoOn')
+    video_text = "VIDEO ON" if video_status else "VIDEO OFF"
+    draw_small_text(video_text, 100)
 
-def show_red_screen(status):
-    screen.fill((255, 0, 0))
-    draw_text("IN MEETING!", WHITE)
-    show_header(status)
-    pygame.display.flip()
+    drone_status = status.get('droneOn')
+    drone_text = "DRONE ON" if drone_status else "DRONE OFF"
+    draw_small_text(drone_text, 140)
 
-def show_green_screen(status):
-    screen.fill((0, 255, 0))
-    draw_text("FREE!", BLACK)
-    show_header(status)
     pygame.display.flip()
 
 def fetch_status():
@@ -67,20 +78,19 @@ def fetch_status():
 
         pygame.time.wait(POLL_INTERVAL * 1000) # Wait before next request...
 
+
+
 # Fetch status in separate thread
 status_thread = threading.Thread(target=fetch_status)
 status_thread.daemon = True
 status_thread.start()
 
+
+
 # Main Loop
 try:
     while True:
-        if current_status:
-            if current_status.get("inMeeting"):
-               show_red_screen(current_status)
-            else:
-                show_green_screen(current_status)
-
+        show_status(current_status)
 
         for event in pygame.event.get():
             if event.type == pygame.QUIT or (event.type == pygame.KEYDOWN and event.key == pygame.K_ESCAPE):
