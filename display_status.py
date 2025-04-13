@@ -32,11 +32,13 @@ if DEBUG:
     window_size = (800, 600)  # Width, Height
     screen = pygame.display.set_mode(window_size)
 else:
-    window_size = (info.current_w, info.current_h)
-    screen = pygame.display.set_mode(window_size, pygame.FULLSCREEN)
+    screen = pygame.display.set_mode((0,0), pygame.FULLSCREEN)
 
 pygame.display.set_caption("Status Display")
 clock = pygame.time.Clock()
+
+# Gather screen size
+info = pygame.display.Info()
 screen_width = info.current_w
 screen_height = info.current_h
 
