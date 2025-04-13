@@ -1,26 +1,59 @@
 
 # Pi Meeting Screen
 
-This is a small Flask server that will update your meeting status to be displayed on a screen attached to the pi.
+A lightweight Flask + Pygame project to display meeting status information on a screen. Designed to run on a Raspberry Pi with a screen attached, but can also run on Windows for testing or development.
+
+## Features
+
+- REST API server to GET/POST meeting status
+- Visual display of status using Pygame
+- Automatically polls the server to show real-time updates
+- Can show fullscreen on Pi, or windowed for debugging
 
 ## Requirements
 
-Python, pip, a Raspberry Pi, a screen for the pi.
+- Python 3.9+
+- `pip`, `venv`
+- Required packages listed in `requirements.txt`
 
-## Running
+## Setup Instructions
+
+### 🪟 Running on Windows
 
 ```sh
-# Checkout the repo & navigate to the directory
-git clone https://github.com/seamus-sloan/pi-meeting-server.git
+# Clone the repo
+git clone https://github.com/yourusername/pi-meeting-server.git
 cd pi-meeting-server
 
-# Set your venv
+# Create & activate venv
 python -m venv venv
-source venv/bin/activate
+venv/Scripts/activate
 
-# Install requirements
+# Install dependencies
 pip install -r requirements.txt
 
-# Run the programs
-python server.py & python display_status.py 
+# Run the server
+python server.py
+
+# Run the display (DEBUG for windowed mode)
+$env:DEBUG="true"
+python display_status.py
+```
+
+### 🍓Running on Pi
+
+```sh
+# Clone the repo
+git clone https://github.com/yourusername/pi-meeting-server.git
+cd pi-meeting-server
+
+# Create and activate venv
+python3 -m venv venv
+source venv/bin/activate
+
+# Install dependencies
+pip install -r requirements.txt
+
+# Run the scripts
+python server.py & python display_status.py
 ```
