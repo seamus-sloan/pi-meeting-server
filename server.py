@@ -1,4 +1,5 @@
 from flask import Flask, request, jsonify
+import subprocess
 
 app = Flask(__name__)
 
@@ -7,6 +8,34 @@ current_status = {
     "videoOn": False,
     "droneOn": False,
 }
+
+@app.route('/update', methods=['POST'])
+def update_code():
+    try:
+        repo_dir = "/home/sesloan/pi-meeting-server"
+
+        # Pull the new changes & update dependencies
+        pull_output = subprocess.check_output(['git', '-C', repo_dir, 'pull'], stderr=subprocess.STDOUT)
+        pip_output = subprocess.check_output(['pip', 'install', '-r', f'{repo_dir}/requirements.txt'], stderr=subprocess.STDOUT)
+        
+        # Restart scripts (kill old, run fresh)
+        subprocess.call(['pkill', '-f', 'server.py'])
+        subprocess.call(['pkill', '-f', 'display_status.py'])
+
+        subprocess.Popen(['python3', f'{repo_dir}/server.py'])
+        subprocess.Popen(['python3', f'{repo_dir}/display_status.py'])
+
+        return jsonify({
+            "status": "Updated successfully",
+            "git": pull_output.decode(),
+            "pip": pip_output.decode()
+        })
+
+    except subprocess.CalledProcessError as e:
+        return jsonify({
+            "error": "Update failed",
+            "output": e.output.decode()
+        }), 500
 
 @app.route('/status', methods=['GET'])
 def get_status():
