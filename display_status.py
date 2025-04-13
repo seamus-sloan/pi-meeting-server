@@ -26,16 +26,19 @@ running = True
 
 # Setup the screen
 pygame.init()
+info = pygame.display.Info()
+
 if DEBUG:
     window_size = (800, 600)  # Width, Height
     screen = pygame.display.set_mode(window_size)
 else:
-    info = pygame.display.Info()
     window_size = (info.current_w, info.current_h)
     screen = pygame.display.set_mode(window_size, pygame.FULLSCREEN)
 
 pygame.display.set_caption("Status Display")
 clock = pygame.time.Clock()
+screen_width = info.current_w
+screen_height = info.current_h
 
 # Setup the fonts
 font_large = pygame.font.SysFont("Arial", 100)
@@ -44,8 +47,8 @@ font_small = pygame.font.SysFont("Arial", 36)
 
 def center_surface(surface, x_offset = 0, y_offset = 0):
     return surface.get_rect(center = (
-        screen.get_width() / 2 + x_offset, 
-        screen.get_height() / 2 + y_offset))
+        screen_width / 2 + x_offset, 
+        screen_height / 2 + y_offset))
 
 def draw_large_text(text, color):
     text_surface = font_large.render(text, True, color)
