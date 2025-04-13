@@ -9,40 +9,40 @@ current_status = {
     "droneOn": False,
 }
 
-@app.route('/update', methods=['POST'])
-def update_code():
-    try:
-        repo_dir = "/home/sesloan/pi-meeting-server"
-        venv_python = f"{repo_dir}/venv/bin/python"
-        venv_pip = f"{repo_dir}/venv/bin/pip"
+# @app.route('/update', methods=['POST'])
+# def update_code():
+#     try:
+#         repo_dir = "/home/sesloan/pi-meeting-server"
+#         venv_python = f"{repo_dir}/venv/bin/python"
+#         venv_pip = f"{repo_dir}/venv/bin/pip"
 
-        # Pull updates and install requirements
-        pull_output = subprocess.check_output(['git', '-C', repo_dir, 'pull'], stderr=subprocess.STDOUT)
-        pip_output = subprocess.check_output([venv_pip, 'install', '-r', f'{repo_dir}/requirements.txt'], stderr=subprocess.STDOUT)
+#         # Pull updates and install requirements
+#         pull_output = subprocess.check_output(['git', '-C', repo_dir, 'pull'], stderr=subprocess.STDOUT)
+#         pip_output = subprocess.check_output([venv_pip, 'install', '-r', f'{repo_dir}/requirements.txt'], stderr=subprocess.STDOUT)
 
-        # Build response before killing anything
-        response = jsonify({
-            "status": "Updated successfully",
-            "git": pull_output.decode(),
-            "pip": pip_output.decode()
-        })
+#         # Build response before killing anything
+#         response = jsonify({
+#             "status": "Updated successfully",
+#             "git": pull_output.decode(),
+#             "pip": pip_output.decode()
+#         })
 
-        # Send response first
-        @after_this_request
-        def restart_scripts(response_obj):
-            subprocess.call(['pkill', '-f', 'server.py'])
-            subprocess.call(['pkill', '-f', 'display_status.py'])
-            subprocess.Popen([venv_python, f'{repo_dir}/server.py'])
-            subprocess.Popen([venv_python, f'{repo_dir}/display_status.py'])
-            return response_obj
+#         # Send response first
+#         @after_this_request
+#         def restart_scripts(response_obj):
+#             subprocess.call(['pkill', '-f', 'server.py'])
+#             subprocess.call(['pkill', '-f', 'display_status.py'])
+#             subprocess.Popen([venv_python, f'{repo_dir}/server.py'])
+#             subprocess.Popen([venv_python, f'{repo_dir}/display_status.py'])
+#             return response_obj
 
-        return response
+#         return response
 
-    except subprocess.CalledProcessError as e:
-        return jsonify({
-            "error": "Update failed",
-            "output": e.output.decode()
-        }), 500
+#     except subprocess.CalledProcessError as e:
+#         return jsonify({
+#             "error": "Update failed",
+#             "output": e.output.decode()
+#         }), 500
 
 @app.route('/status', methods=['GET'])
 def get_status():
