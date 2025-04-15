@@ -1,6 +1,6 @@
 #!/bin/bash
 
-# Exit immediately if a command exits with a non-zero status
+# Exit on error
 set -e
 
 # Create and activate virtual environment
@@ -10,6 +10,22 @@ source venv/bin/activate
 # Install dependencies
 pip install -r requirements.txt
 
-# Run both scripts in the background
-python server.py & 
-python display_status.py
+# Start both scripts and save their PIDs
+python server.py &
+SERVER_PID=$!
+
+python display_status.py &
+DISPLAY_PID=$!
+
+# Define cleanup function
+cleanup() {
+  echo "Shutting down..."
+  kill $SERVER_PID $DISPLAY_PID
+  wait
+}
+
+# Trap CTRL+C (SIGINT) and call cleanup
+trap cleanup SIGINT
+
+# Wait for both processes
+wait
