@@ -1,55 +1,61 @@
-import { invoke } from "@tauri-apps/api/core";
-
-let greetInputEl: HTMLInputElement | null;
-let greetMsgEl: HTMLElement | null;
-
-async function greet() {
-  if (greetMsgEl && greetInputEl) {
-    // Learn more about Tauri commands at https://tauri.app/develop/calling-rust/
-    greetMsgEl.textContent = await invoke("greet", {
-      name: greetInputEl.value,
-    });
-  }
-}
-
-window.addEventListener("DOMContentLoaded", () => {
-  greetInputEl = document.querySelector("#greet-input");
-  greetMsgEl = document.querySelector("#greet-msg");
-  document.querySelector("#greet-form")?.addEventListener("submit", (e) => {
-    e.preventDefault();
-    greet();
-  });
-});
-
+type Status = {
+  inMeeting: boolean;
+  droneOn: boolean;
+  videoOn: boolean;
+};
 
 const endpoint = "http://192.168.1.45:5000/status";
 
-document.getElementById("btn1")?.addEventListener("click", () =>
-  sendStatus({ droneOn: true, videoOn: false, inMeeting: false })
-);
+const toggles = {
+  inMeeting: document.getElementById("toggle-inMeeting") as HTMLInputElement,
+  droneOn: document.getElementById("toggle-droneOn") as HTMLInputElement,
+  videoOn: document.getElementById("toggle-videoOn") as HTMLInputElement,
+};
 
-document.getElementById("btn2")?.addEventListener("click", () =>
-  sendStatus({ droneOn: false, videoOn: true, inMeeting: false })
-);
+Object.entries(toggles).forEach(([key, input]) => {
+  input.addEventListener("change", () => {
+    const newStatus: Status = {
+      inMeeting: toggles.inMeeting.checked,
+      droneOn: toggles.droneOn.checked,
+      videoOn: toggles.videoOn.checked,
+    };
+    sendStatus(newStatus);
+  });
+});
 
-document.getElementById("btn3")?.addEventListener("click", () =>
-  sendStatus({ droneOn: true, videoOn: true, inMeeting: true })
-);
-
-async function sendStatus(body: object) {
+async function sendStatus(status: Status) {
   try {
-    const res = await fetch(endpoint, {
+    await fetch(endpoint, {
       method: "POST",
       headers: { "Content-Type": "application/json" },
-      body: JSON.stringify(body),
+      body: JSON.stringify(status),
     });
-
-    if (!res.ok) {
-      console.error("Failed:", res.statusText);
-    } else {
-      console.log("Success:", await res.text());
-    }
   } catch (err) {
-    console.error("Error:", err);
+    console.error("POST error:", err);
   }
 }
+
+async function pollStatus() {
+  try {
+    const res = await fetch(endpoint);
+    const data: Status = await res.json();
+    updateUI(data);
+  } catch (err) {
+    console.error("GET error:", err);
+  }
+}
+
+function updateBodyBackground(inMeeting: boolean) {
+  document.body.classList.remove("meeting-true", "meeting-false");
+  document.body.classList.add(`meeting-${inMeeting}`);
+}
+
+function updateUI(status: Status) {
+  toggles.inMeeting.checked = status.inMeeting;
+  toggles.droneOn.checked = status.droneOn;
+  toggles.videoOn.checked = status.videoOn;
+  updateBodyBackground(status.inMeeting);
+}
+
+setInterval(pollStatus, 2000);
+pollStatus();

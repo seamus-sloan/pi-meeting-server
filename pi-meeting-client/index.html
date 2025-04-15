@@ -10,39 +10,24 @@
 
   <body>
     <main class="container">
-      <h1>Welcome to Tauri</h1>
-
-      <div class="row">
-        <a href="https://vitejs.dev" target="_blank">
-          <img src="/src/assets/vite.svg" class="logo vite" alt="Vite logo" />
-        </a>
-        <a href="https://tauri.app" target="_blank">
-          <img
-            src="/src/assets/tauri.svg"
-            class="logo tauri"
-            alt="Tauri logo"
-          />
-        </a>
-        <a href="https://www.typescriptlang.org/docs" target="_blank">
-          <img
-            src="/src/assets/typescript.svg"
-            class="logo typescript"
-            alt="typescript logo"
-          />
-        </a>
-      </div>
-      <p>Click on the Tauri logo to learn more about the framework</p>
-
-      <form class="row" id="greet-form">
-        <input id="greet-input" placeholder="Enter a name..." />
-        <button type="submit">Greet</button>
-      </form>
-      <p id="greet-msg"></p>
-
-      <div class="space-y-4 text-center">
-        <button class="btn" id="btn3">IN MEETING</button>
-        <button class="btn" id="btn1">Drone ON</button>
-        <button class="btn" id="btn2">Video ON</button>
+      <h2 class="section-title">
+        Pi Meeting Client
+      </h2>
+      <div class="toggle-wrapper">
+        <label class="toggle-label">
+          <span>In Meeting</span>
+          <input id="toggle-inMeeting" type="checkbox" class="toggle" />
+        </label>
+      
+        <label class="toggle-label">
+          <span>Drone On</span>
+          <input id="toggle-droneOn" type="checkbox" class="toggle" />
+        </label>
+      
+        <label class="toggle-label">
+          <span>Video On</span>
+          <input id="toggle-videoOn" type="checkbox" class="toggle" />
+        </label>
       </div>
     </main>
   </body>
