@@ -14,8 +14,8 @@
     "windows": [
       {
         "title": "pi-meeting-client",
-        "width": 800,
-        "height": 600
+        "width": 600,
+        "height": 230
       }
     ],
     "security": {

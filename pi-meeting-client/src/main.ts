@@ -31,6 +31,7 @@ async function sendStatus(status: Status) {
       body: JSON.stringify(status),
     });
   } catch (err) {
+    showToast("Error sending status");
     console.error("POST error:", err);
   }
 }
@@ -55,6 +56,20 @@ function updateUI(status: Status) {
   toggles.droneOn.checked = status.droneOn;
   toggles.videoOn.checked = status.videoOn;
   updateBodyBackground(status.inMeeting);
+}
+
+function showToast(message: string) {
+  const toast = document.createElement("div");
+  toast.className = "toast";
+  toast.textContent = message;
+
+  const container = document.getElementById("toast-container");
+  container?.appendChild(toast);
+
+  // Remove the toast after the animation ends (3.6s total)
+  setTimeout(() => {
+    toast.remove();
+  }, 3600);
 }
 
 setInterval(pollStatus, 2000);
