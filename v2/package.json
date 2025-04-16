@@ -1,0 +1,12 @@
+{
+  "name": "pi-meeting",
+  "private": true,
+  "workspaces": [
+    "pi-app/src",
+    "client-app/src",
+    "shared-ui"
+  ],
+  "dependencies": {
+    "@tauri-apps/api": "^2.5.0"
+  }
+}
