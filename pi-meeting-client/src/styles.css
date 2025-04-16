@@ -39,6 +39,12 @@
   letter-spacing: 0.5px;
 }
 
+html, body {
+  height: 100%;
+  margin: 0;
+  padding: 0;
+}
+
 body {
   transition: background 1s ease;
 }
