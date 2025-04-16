@@ -1,30 +1,25 @@
 import { useEffect, useState } from "react";
 import { listen } from "@tauri-apps/api/event";
+import "./App.css";
 
 type Status = {
-  inMeeting: boolean;
-  droneOn: boolean;
-  videoOn: boolean;
+  in_meeting: boolean;
+  drone_on: boolean;
+  video_on: boolean;
 };
 
 export default function App() {
   const [status, setStatus] = useState<Status | null>(null);
 
-  // 🅰️ Pull initial status once
+  // Fetch initial status
   useEffect(() => {
     fetch("http://localhost:5000/status")
       .then((res) => res.json())
-      .then((data) => {
-        console.log("✅ Got status from backend:", data);
-        setStatus(data);
-      })
-      .catch((err) => {
-        console.error("❌ Failed to fetch status:", err);
-      });
+      .then(setStatus)
+      .catch((err) => console.error("Failed to fetch status", err));
   }, []);
-  
 
-  // 🅱️ Subscribe to updates
+  // Subscribe to updates
   useEffect(() => {
     const unlisten = listen<Status>("status_changed", (event) => {
       setStatus(event.payload);
@@ -35,13 +30,33 @@ export default function App() {
     };
   }, []);
 
+  if (!status) {
+    return <div className="status-screen">Loading status...</div>;
+  }
+
   return (
-    <div style={{ fontSize: "2rem", textAlign: "center", paddingTop: "20vh" }}>
-      {status ? (
-        <pre>{JSON.stringify(status, null, 2)}</pre>
-      ) : (
-        <p>Waiting for status...</p>
-      )}
+    <div className={`status-screen ${status.in_meeting ? "meeting" : "available"}`}>
+      <div className="status-center-content">
+        <div className="status-title">
+          {status.in_meeting ? "In Meeting" : "Available"}
+        </div>
+  
+        <div className="status-detail-row">
+          <div className="status-detail">
+            🛸 Drone:{" "} 
+            <span className={`status-value ${status.drone_on ? "on" : ""}`}>
+              {status.drone_on ? "ON" : "OFF"}
+            </span>
+          </div>
+          <div className="divider" />
+          <div className="status-detail">
+            📹 Video:{" "}
+            <span className={`status-value ${status.video_on ? "on" : ""}`}>
+              {status.video_on ? "ON" : "OFF"}
+            </span>
+          </div>
+        </div>
+      </div>
     </div>
   );
 }
