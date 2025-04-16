@@ -3,6 +3,9 @@
 # Exit on error
 set -e
 
+# HACK: For some reason, my pi doesn't want to set the resolution correctly.
+wlr-randr --output HDMI-A-1 --mode 848x480@60Hz
+
 # Create and activate virtual environment
 python3 -m venv venv
 source venv/bin/activate
