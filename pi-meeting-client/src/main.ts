@@ -12,7 +12,7 @@ const toggles = {
   videoOn: document.getElementById("toggle-videoOn") as HTMLInputElement,
 };
 
-Object.entries(toggles).forEach(([key, input]) => {
+Object.entries(toggles).forEach(([_key, input]) => {
   input.addEventListener("change", () => {
     const newStatus: Status = {
       inMeeting: toggles.inMeeting.checked,
