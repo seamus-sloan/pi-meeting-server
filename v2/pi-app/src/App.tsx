@@ -1,5 +1,7 @@
 import { useEffect, useState } from "react";
 import { listen } from "@tauri-apps/api/event";
+import '../../shared-ui/assets/fonts/Orbitron-VariableFont_wght.ttf';
+
 import "./App.css";
 
 type Status = {
@@ -56,6 +58,8 @@ export default function App() {
             </span>
           </div>
         </div>
+
+        <div className="status-message">Meeting with design team until 2:30pm</div>
       </div>
     </div>
   );

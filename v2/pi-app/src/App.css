@@ -1,6 +1,9 @@
-@import url('https://fonts.googleapis.com/css2?family=Orbitron:wght@500&display=swap');
-@import url('https://fonts.googleapis.com/css2?family=Orbitron:wght@500&family=Share+Tech+Mono&display=swap');
-
+@font-face {
+  font-family: 'Orbitron';
+  src: url("../../shared-ui/assets/fonts/Orbitron-VariableFont_wght.ttf") format("truetype");
+  font-weight: normal;
+  font-style: normal;
+}
 
 html, body {
   margin: 0;
@@ -42,7 +45,6 @@ html, body {
   font-size: 3rem;
   font-weight: bold;
   margin-bottom: 2rem;
-  font-family: "Orbitron";
 }
 
 .status-detail {
@@ -72,7 +74,6 @@ html, body {
 }
 
 .status-value {
-  /* font-family: monospace; */
   text-transform: uppercase;
   margin-left: 0.3rem;
   transition: color 0.3s ease-in-out;
@@ -82,4 +83,13 @@ html, body {
 .status-value.on {
   color: #ff4444;
   font-weight: 500;
+}
+
+.status-message {
+  margin-top: 1.5rem;
+  font-size: 1.5rem;
+  color: #ffffff;
+  font-family: 'Share Tech Mono', monospace;
+  letter-spacing: 0.5px;
+  opacity: 0.8;
 }
