@@ -1,4 +1,6 @@
 packages:
   - "pi-app/src"
+  - "pi-app"
   - "client-app"
+  - "client-app/src"
   - "shared-ui"
