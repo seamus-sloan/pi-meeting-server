@@ -13,6 +13,7 @@ fn main() {
                 in_meeting: false,
                 drone_on: false,
                 video_on: false,
+                message: None,
             }));
 
             // Emit default state to frontend immediately

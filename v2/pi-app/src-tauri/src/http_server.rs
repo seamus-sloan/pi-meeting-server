@@ -9,6 +9,7 @@ pub struct Status {
     pub in_meeting: bool,
     pub drone_on: bool,
     pub video_on: bool,
+    pub message: Option<String>,
 }
 
 pub fn start_http_server(state: Arc<Mutex<Status>>, app_handle: tauri::AppHandle) {

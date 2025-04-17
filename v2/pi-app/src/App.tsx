@@ -8,6 +8,7 @@ type Status = {
   in_meeting: boolean;
   drone_on: boolean;
   video_on: boolean;
+  message?: string | null;
 };
 
 export default function App() {
@@ -42,6 +43,13 @@ export default function App() {
         <div className="status-title">
           {status.in_meeting ? "In Meeting" : "Available"}
         </div>
+
+
+      { status.message && (
+          <div className="status-message">
+            {status.message}
+          </div>
+        )}
   
         <div className="status-detail-row">
           <div className="status-detail">
@@ -58,8 +66,6 @@ export default function App() {
             </span>
           </div>
         </div>
-
-        <div className="status-message">Meeting with design team until 2:30pm</div>
       </div>
     </div>
   );
