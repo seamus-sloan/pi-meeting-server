@@ -16,7 +16,7 @@ sudo apt install -y \
 # Install rust
 curl https://sh.rustup.rs -sSf | sh
 source $HOME/.cargo/env
-rustup target add armv7-unknown-linux-gnueabihf
+rustup target add armv7-unknown-linux-gnu
 
 # Install node & pnpm
 curl -fsSL https://deb.nodesource.com/setup_18.x | sudo -E bash -
