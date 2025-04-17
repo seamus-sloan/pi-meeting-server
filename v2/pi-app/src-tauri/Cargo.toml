@@ -18,8 +18,8 @@ crate-type = ["staticlib", "cdylib", "rlib"]
 tauri-build = { version = "2", features = [] }
 
 [dependencies]
-tauri = "1.5"
-tauri-build = "1.5"
+tauri = { version = "2", features = [] }
+tauri-build = "2"
 tauri-plugin-opener = "2"
 tiny_http = "0.12.0"
 serde = { version = "1", features = ["derive"] }
