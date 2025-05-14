@@ -1,50 +1,82 @@
-import { useState } from "react";
-import reactLogo from "./assets/react.svg";
-import { invoke } from "@tauri-apps/api/core";
-import "./App.css";
+import { useState } from 'react';
+import './App.css';
+import '../../shared-ui/assets/fonts/Orbitron-VariableFont_wght.ttf';
 
 function App() {
-  const [greetMsg, setGreetMsg] = useState("");
-  const [name, setName] = useState("");
+  const [inMeeting, setInMeeting] = useState(false);
+  const [droneOn, setDroneOn] = useState(false);
+  const [videoOn, setVideoOn] = useState(false);
+  const [message, setMessage] = useState<string | null>('');
 
-  async function greet() {
-    // Learn more about Tauri commands at https://tauri.app/develop/calling-rust/
-    setGreetMsg(await invoke("greet", { name }));
-  }
+  const sendStatus = async (newState: {
+    in_meeting: boolean,
+    drone_on: boolean,
+    video_on: boolean,
+    message: string | null
+  }) => {
+    try {
+      await fetch("http://192.168.1.45:5000/status", {
+        method: "POST",
+        headers: {
+          "Content-Type": "text/plain",
+        },
+        body: JSON.stringify(newState)
+      });
+      console.log('Status sent:', newState);
+    } catch (err) {
+      console.error('Error sending status:', err);
+    }
+  };
+
+  const updateAndSend = (
+    updated: Partial<{ inMeeting: boolean; droneOn: boolean; videoOn: boolean; message: string | null }>
+  ) => {
+    const newState = {
+      inMeeting: updated.inMeeting ?? inMeeting,
+      droneOn: updated.droneOn ?? droneOn,
+      videoOn: updated.videoOn ?? videoOn,
+      message: updated.message ?? message,
+    };
+
+    setInMeeting(newState.inMeeting);
+    setDroneOn(newState.droneOn);
+    setVideoOn(newState.videoOn);
+    setMessage(newState.message);
+
+    sendStatus({
+      in_meeting: newState.inMeeting,
+      drone_on: newState.droneOn,
+      video_on: newState.videoOn,
+      message: newState.message === '' ? '' : newState.message || null,
+    });
+  };
 
   return (
-    <main className="container">
-      <h1>Welcome to Tauri + React</h1>
+    <div className={`status-screen ${inMeeting ? 'meeting' : 'available'}`}>
+      <div className="status-center-content">
+        <div className="status-title">Pi Meeting Controls</div>
 
-      <div className="row">
-        <a href="https://vitejs.dev" target="_blank">
-          <img src="/vite.svg" className="logo vite" alt="Vite logo" />
-        </a>
-        <a href="https://tauri.app" target="_blank">
-          <img src="/tauri.svg" className="logo tauri" alt="Tauri logo" />
-        </a>
-        <a href="https://reactjs.org" target="_blank">
-          <img src={reactLogo} className="logo react" alt="React logo" />
-        </a>
-      </div>
-      <p>Click on the Tauri, Vite, and React logos to learn more.</p>
+        <div className="status-detail-row">
+          <button className="toggle-button" onClick={() => updateAndSend({ inMeeting: !inMeeting })}>
+            {inMeeting ? "🚫 IN MEETING" : "✅ AVAILABLE"}
+          </button>
+          <button className="toggle-button" onClick={() => updateAndSend({ droneOn: !droneOn })}>
+            🛸 DRONE: {droneOn ? "ON" : "OFF"}
+          </button>
+          <button className="toggle-button" onClick={() => updateAndSend({ videoOn: !videoOn })}>
+            📹 CAMERA: {videoOn ? "ON" : "OFF"}
+          </button>
+        </div>
 
-      <form
-        className="row"
-        onSubmit={(e) => {
-          e.preventDefault();
-          greet();
-        }}
-      >
         <input
-          id="greet-input"
-          onChange={(e) => setName(e.currentTarget.value)}
-          placeholder="Enter a name..."
+          className="message-input"
+          type="text"
+          placeholder="Optional message"
+          value={message ?? ''}
+          onChange={(e) => updateAndSend({ message: e.target.value })}
         />
-        <button type="submit">Greet</button>
-      </form>
-      <p>{greetMsg}</p>
-    </main>
+      </div>
+    </div>
   );
 }
 
